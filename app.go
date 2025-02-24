@@ -20,7 +20,7 @@ func init() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 }
 
-func Init(appVersion, buildVersion string) error {
+func Init(appVersion, buildVersion string) {
 	appInfo.AppVersion = appVersion
 	appInfo.BuildVersion = buildVersion
 
@@ -36,6 +36,17 @@ func Init(appVersion, buildVersion string) error {
 	}
 
 	appInfo.DebugMode = *flDebugMode
+	level := levelInfo
+	if DebugMode() {
+		level = levelDebug
+	}
+
+	setLogLevel(level)
+	LogWith(
+		"Name", Name(),
+		"Version", Version(),
+		"DebugMode", DebugMode(),
+	).Info("Start application")
 
 	configFile := ""
 	configFile = *flConfigFile
@@ -43,7 +54,11 @@ func Init(appVersion, buildVersion string) error {
 		configFile = Name() + ".json"
 	}
 
-	return readConfigFile(configFile)
+	if err := readConfigFile(configFile); err != nil {
+		LogWith(
+			"Error", err,
+		).Fatal("Read config file")
+	}
 }
 
 // DebugMode - returns true if flag 'd' exists in cmd params
