@@ -24,7 +24,7 @@ func Init(appVersion, buildVersion string) error {
 	appInfo.AppVersion = appVersion
 	appInfo.BuildVersion = buildVersion
 
-	flVersion := flag.Bool("v", false, "-v = show version")
+	flVersion := flag.Bool("v", false, "-v = show app version")
 	flConfigFile := flag.String("c", "", "-c = set config file (default: <AppName>.json)")
 	flDebugMode := flag.Bool("d", false, "-d = set debug mode to true")
 
