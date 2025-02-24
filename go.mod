@@ -1,3 +1,3 @@
-module github.com/titanby/app/v1
+module github.com/titanby/app
 
 go 1.23
