@@ -24,10 +24,16 @@ func Init(appVersion, buildVersion string) error {
 	appInfo.AppVersion = appVersion
 	appInfo.BuildVersion = buildVersion
 
+	flVersion := flag.Bool("v", false, "-v = show version")
 	flConfigFile := flag.String("c", "", "-c = set config file (default: <AppName>.json)")
 	flDebugMode := flag.Bool("d", false, "-d = set debug mode to true")
 
 	flag.Parse()
+
+	if *flVersion {
+		println(Name(), Version())
+		os.Exit(0)
+	}
 
 	appInfo.DebugMode = *flDebugMode
 
