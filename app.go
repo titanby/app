@@ -14,34 +14,47 @@ var (
 		AppVersion   string
 		BuildVersion string
 	}{}
+
+	flVersion    = flag.Bool("v", false, "-v = show app version")
+	flConfigFile = flag.String("c", "", "-c = set config file (default: <AppName>.json)")
+	flDebugMode  = flag.Bool("d", false, "-d = set debug mode to true")
 )
 
 func init() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 }
 
-func Init(appVersion, buildVersion string) {
+func setVersion(appVersion, buildVersion string) {
 	appInfo.AppVersion = appVersion
 	appInfo.BuildVersion = buildVersion
+}
 
-	flVersion := flag.Bool("v", false, "-v = show app version")
-	flConfigFile := flag.String("c", "", "-c = set config file (default: <AppName>.json)")
-	flDebugMode := flag.Bool("d", false, "-d = set debug mode to true")
-
+func init() {
+	runtime.GOMAXPROCS(runtime.NumCPU())
 	flag.Parse()
+	if *flDebugMode {
+		SetDebugMode()
+	} else {
+		SetInfoMode()
+	}
+}
 
+func checkFlagVersion() {
 	if *flVersion {
 		println(Name(), Version())
 		os.Exit(0)
 	}
+}
 
-	appInfo.DebugMode = *flDebugMode
-	level := levelInfo
-	if DebugMode() {
-		level = levelDebug
-	}
+func InitBasic(appVersion, buildVersion string) {
+	setVersion(appVersion, buildVersion)
+	checkFlagVersion()
+}
 
-	setLogLevel(level)
+func Init(appVersion, buildVersion string) {
+	setVersion(appVersion, buildVersion)
+	checkFlagVersion()
+
 	LogWith(
 		"Name", Name(),
 		"Version", Version(),
@@ -64,6 +77,16 @@ func Init(appVersion, buildVersion string) {
 // DebugMode - returns true if flag 'd' exists in cmd params
 func DebugMode() bool {
 	return appInfo.DebugMode
+}
+
+func SetDebugMode() {
+	appInfo.DebugMode = true
+	setLogLevel(levelDebug)
+}
+
+func SetInfoMode() {
+	appInfo.DebugMode = false
+	setLogLevel(levelInfo)
 }
 
 // Name - returns application name as filename without extension
